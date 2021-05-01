@@ -149,7 +149,7 @@ where
             "mapped reader is reportedly reading more than the destination buffer's capacity"
         );
         // Nothing has been consumed and there are unprocessed bytes.
-        if nsrc == 0 && unprocessed.len() > 0 {
+        if nsrc == 0 && !unprocessed.is_empty() {
             assert!(unprocessed.len() < this.buf.len());
             let count = unprocessed.len();
             // SAFETY: This utilizes `ptr::copy` which per the documentation is
