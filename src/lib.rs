@@ -7,7 +7,7 @@ use std::{
     task::Poll,
 };
 
-use futures::AsyncRead;
+use futures::{io::BufReader, AsyncRead};
 use pin_project::pin_project;
 
 /// Convenience trait to apply the utility functions to types implementing
@@ -22,6 +22,7 @@ pub trait AsyncReadUtil: AsyncRead + Sized {
     fn map_read<F>(self, f: F) -> MappedReader<Self, F>
     where
         F: FnMut(&[u8], &mut [u8]) -> (usize, usize);
+    fn buffered(self) -> BufReader<Self>;
 }
 
 impl<R: AsyncRead + Sized> AsyncReadUtil for R {
@@ -34,6 +35,10 @@ impl<R: AsyncRead + Sized> AsyncReadUtil for R {
         F: FnMut(&[u8], &mut [u8]) -> (usize, usize),
     {
         MappedReader::new(self, f)
+    }
+
+    fn buffered(self) -> BufReader<Self> {
+        BufReader::new(self)
     }
 }
 
